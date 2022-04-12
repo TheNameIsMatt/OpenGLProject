@@ -20,8 +20,23 @@ int main()
 	 0.0f,  0.5f, 0.0f
 	};
 	unsigned int VBO;
+	unsigned int VAO;
 
 	unsigned int vertexShader;
+
+	unsigned int fragmentShader;
+
+	unsigned int shaderProgram;
+
+
+
+	const char* fragmentShaderSource = "#version 330 core\n"
+		"out vec4 FragColor;\n"
+
+		"void main()\n"
+		"{\n"
+		"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+		"}\0";
 
 	const char* vertexShaderSource = "#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
@@ -29,6 +44,9 @@ int main()
 		"{\n"
 		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 		"}\0";
+
+
+
 
 
 
@@ -45,6 +63,10 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+
+
+
+
 
 
 	// We pass GLAD the function to load the address of the OpenGL function pointers which is OS-specific. GLFW gives us glfwGetProcAddress that defines the correct function based on which OS we're compiling for.
@@ -65,6 +87,7 @@ int main()
 
 	// These create a buffer that is placed on the graphics card, this means that our vertex shader has instant access to this information and can handle it however it wants
 	glGenBuffers(1, &VBO);
+	
 
 	// BindBuffer specifies what information the second parameter is going to hold, in this case GL_ARRAY_BUFFER is going to be vertex attributes
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -72,6 +95,18 @@ int main()
 	// Creates and intialises a buffer object's data store 
 	// GL_STATIC_DRAW means that the information is going to be accessed many times.
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	
+
+
+
 
 
 
@@ -82,6 +117,21 @@ int main()
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
 
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+
+
+	// The glCreateProgram function creates a program and returns the ID reference to the newly created program object. Now we need to attach the previously compiled shaders to the program object and then link them with glLinkProgram:
+	shaderProgram = glCreateProgram();
+
+
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+#pragma region CheckShaders
+
 	int  success;
 	char infoLog[512];
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
@@ -91,6 +141,37 @@ int main()
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
+
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+
+	if (!success)
+	{
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		std::cout << "ERROR::PROGRAM::SHADERPROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+#pragma endregion Check Shaders compiled successfully
+
+
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//glEnableVertexAttribArray(0);
+
+	// This code will ensure that ever rendering and shading call will use this object we have created
+	glUseProgram(shaderProgram);
+
+	// After we have initialised the shaders into the program we can delete them as they are no longer needed.
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+
+
+
 	//Double buffer
 	// When an application draws in a single buffer the resulting image may display flickering issues.This is because the resulting output image is not drawn in an instant, 
 	 // but drawn pixel by pixeland usually from left to rightand top to bottom.Because this image is not displayed at an instant to the user while still being rendered to, 
@@ -98,13 +179,23 @@ int main()
 	// while all the rendering commands draw to the back buffer.As soon as all the rendering commands are finished we swap the back buffer to the front buffer so the image can be displayed without still being rendered to, removing all the aforementioned artifacts.
 	while (!glfwWindowShouldClose(window)) 
 	{
+		// input
+		// -----
 		processInput(window);
 
-
+		// render
+		// ------
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		// Because we are assigned values using only the colour buffer with the function above, we only need to GLCLEAR the colour buffer bit, if we added a depth buffer we would need to GL CLEAR that too
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT); // Because we are assigned values using only the colour buffer with the function above, we only need to GLCLEAR the colour buffer bit, if we added a depth buffer we would need to GL CLEAR that too
 
+		// draw our first triangle
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		// glBindVertexArray(0); // no need to unbind it every time 
+
+		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -114,6 +205,9 @@ int main()
 
 
 }
+
+
+
 
 void processInput(GLFWwindow *window) {
 	// Here we check whether the user has pressed the escape key (if it's not pressed, glfwGetKey returns GLFW_RELEASE)
