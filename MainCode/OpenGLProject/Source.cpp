@@ -14,6 +14,24 @@ void processInput(GLFWwindow* window);
 
 int main()
 {
+	float vertices[] = {
+	-0.5f, -0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
+	};
+	unsigned int VBO;
+
+	unsigned int vertexShader;
+
+	const char* vertexShaderSource = "#version 330 core\n"
+		"layout (location = 0) in vec3 aPos;\n"
+		"void main()\n"
+		"{\n"
+		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"}\0";
+
+
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -45,8 +63,34 @@ int main()
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+	// These create a buffer that is placed on the graphics card, this means that our vertex shader has instant access to this information and can handle it however it wants
+	glGenBuffers(1, &VBO);
+
+	// BindBuffer specifies what information the second parameter is going to hold, in this case GL_ARRAY_BUFFER is going to be vertex attributes
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	// Creates and intialises a buffer object's data store 
+	// GL_STATIC_DRAW means that the information is going to be accessed many times.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 
+
+	// An Int is used as a form of abstraction from the programmer, this means that it can only really be handled by API calls
+	// These lines are just creating an object in memory to attach our shader source code to
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glCompileShader(vertexShader);
+
+	int  success;
+	char infoLog[512];
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+	if (!success)
+	{
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
 	//Double buffer
 	// When an application draws in a single buffer the resulting image may display flickering issues.This is because the resulting output image is not drawn in an instant, 
 	 // but drawn pixel by pixeland usually from left to rightand top to bottom.Because this image is not displayed at an instant to the user while still being rendered to, 
