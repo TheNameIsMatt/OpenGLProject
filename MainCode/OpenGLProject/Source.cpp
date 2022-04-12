@@ -7,10 +7,9 @@
 
 
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
-}
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow* window);
+
 
 
 int main()
@@ -55,6 +54,13 @@ int main()
 	// while all the rendering commands draw to the back buffer.As soon as all the rendering commands are finished we swap the back buffer to the front buffer so the image can be displayed without still being rendered to, removing all the aforementioned artifacts.
 	while (!glfwWindowShouldClose(window)) 
 	{
+		processInput(window);
+
+
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		// Because we are assigned values using only the colour buffer with the function above, we only need to GLCLEAR the colour buffer bit, if we added a depth buffer we would need to GL CLEAR that too
+		glClear(GL_COLOR_BUFFER_BIT);
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -64,3 +70,15 @@ int main()
 
 
 }
+
+void processInput(GLFWwindow *window) {
+	// Here we check whether the user has pressed the escape key (if it's not pressed, glfwGetKey returns GLFW_RELEASE)
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+
