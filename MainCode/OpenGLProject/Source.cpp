@@ -100,7 +100,9 @@ int main()
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-
+	// The first number is 0 because the only attribute we have in our array is positional data, then the next one is 3 because we have 3 bits of data for our first attribute
+	// x, y, z. However if we had another set of attributes such as texture coordinate that had an x,y value, we would add another line of code for glVertexAttribPointer
+	// then set the first value to 1, then the second parameter to 2 as it only contains two values for texture coordinates.
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	
@@ -195,7 +197,6 @@ int main()
 		// glBindVertexArray(0); // no need to unbind it every time 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
