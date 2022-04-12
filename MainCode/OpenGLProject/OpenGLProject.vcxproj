@@ -79,7 +79,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Users\Matth\Desktop\OpenGLProject\OpenGLLibs\GLAD\include;C:\Users\Matth\Desktop\OpenGLProject\OpenGLLibs\glfw-3.3.7\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Matth\Desktop\OpenGLProject\OpenGLLibs;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\Matth\Desktop\OpenGLProject\OpenGLLibs\GLAD\src;C:\Users\Matth\Desktop\OpenGLProject\OpenGLLibs\GLAD\include;"C:\Users\Matth\Desktop\OpenGLProject\OpenGLLibs\GLAD\src\glad.c";C:\Users\Matth\Desktop\OpenGLProject\OpenGLLibs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -142,7 +142,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\OpenGLLibs\GLAD\src\glad.c" />
     <ClCompile Include="Source.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
