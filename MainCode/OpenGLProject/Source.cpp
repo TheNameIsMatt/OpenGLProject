@@ -1,3 +1,7 @@
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include <Windows.h>
 #include <glad/glad.h>	
 #include <GLAD/glad.h>
@@ -23,7 +27,7 @@ int main()
 	};
 
 	unsigned int indices[] = {  //These numbers for these indices represent the array index for the vertices, the first 3 numbers above would be vertices[1], second 3 would be vertices[2]
-	0, // Therefore each of these is actually secretly saying vertices[0] not just 0.
+	0,                          // Therefore each of these is actually secretly saying vertices[0] not just 0.
 	1,
 	3,   
 	1,
@@ -201,6 +205,15 @@ int main()
 	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+	//Intialising IMGUI
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 330");
+
+
 
 	//Double buffer
 	// When an application draws in a single buffer the resulting image may display flickering issues.This is because the resulting output image is not drawn in an instant, 
@@ -218,6 +231,10 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT); // Because we are assigned values using only the colour buffer with the function above, we only need to GLCLEAR the colour buffer bit, if we added a depth buffer we would need to GL CLEAR that too
 
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
 		// draw our first triangle
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
@@ -225,10 +242,21 @@ int main()
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//glBindVertexArray(0); // no need to unbind it every time 
 
+		ImGui::Begin("My Cool Window");
+		ImGui::Text("Hi");
+		ImGui::End();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 	return 0;

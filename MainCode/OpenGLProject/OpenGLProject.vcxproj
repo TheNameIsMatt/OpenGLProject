@@ -118,6 +118,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\Matth\Desktop\OpenGLProject\OpenGLLibs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,9 +144,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\OpenGLLibs\GLAD\src\glad.c" />
+    <ClCompile Include="..\..\OpenGLLibs\imgui\imgui.cpp" />
+    <ClCompile Include="..\..\OpenGLLibs\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\..\OpenGLLibs\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\OpenGLLibs\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\..\OpenGLLibs\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\..\OpenGLLibs\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\..\OpenGLLibs\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\OpenGLLibs\imgui\imconfig.h" />
+    <ClInclude Include="..\..\OpenGLLibs\imgui\imgui.h" />
+    <ClInclude Include="..\..\OpenGLLibs\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="..\..\OpenGLLibs\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\..\OpenGLLibs\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\..\OpenGLLibs\imgui\imgui_internal.h" />
+    <ClInclude Include="..\..\OpenGLLibs\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\..\OpenGLLibs\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\..\OpenGLLibs\imgui\imstb_truetype.h" />
     <ClInclude Include="Source.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
