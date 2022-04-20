@@ -22,9 +22,13 @@ int main()
 	-0.5f,  0.5f, 0.0f
 	};
 
-	unsigned int indices[] = {  
-	0, 1, 3,   
-	1, 2, 3    
+	unsigned int indices[] = {  //These numbers for these indices represent the array index for the vertices, the first 3 numbers above would be vertices[1], second 3 would be vertices[2]
+	0, // Therefore each of these is actually secretly saying vertices[0] not just 0.
+	1,
+	3,   
+	1,
+	2,
+	3    
 	};
 
 	unsigned int VBO; //Vertex Buffer Object - Creates space in system memory for the array of vertices
