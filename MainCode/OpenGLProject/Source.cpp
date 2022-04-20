@@ -15,12 +15,21 @@ void processInput(GLFWwindow* window);
 int main()
 {
 	float vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f
+	 0.5f,  0.5f, 0.0f,  
+	 0.5f, -0.5f, 0.0f,  
+
+	-0.5f, -0.5f, 0.0f,  
+	-0.5f,  0.5f, 0.0f
 	};
-	unsigned int VBO;
-	unsigned int VAO;
+
+	unsigned int indices[] = {  
+	0, 1, 3,   
+	1, 2, 3    
+	};
+
+	unsigned int VBO; //Vertex Buffer Object - Creates space in system memory for the array of vertices
+	unsigned int VAO; //Vertex Array Object - Created for instant access to vertex data
+	unsigned int EBO; //Element Buffer Object - Used to indicate overlapping vertices and remove the need for duplicated edges - similar to removing vertices occupying the same space in blender
 
 	unsigned int vertexShader;
 
@@ -86,26 +95,39 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// These create a buffer that is placed on the graphics card, this means that our vertex shader has instant access to this information and can handle it however it wants
+	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO); //When bound and EBO is stored inside an existing VAO object, 
+	
 	
 
 	// BindBuffer specifies what information the second parameter is going to hold, in this case GL_ARRAY_BUFFER is going to be vertex attributes
+
+	glBindVertexArray(VAO);
+
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+
 
 	// Creates and intialises a buffer object's data store 
 	// GL_STATIC_DRAW means that the information is going to be accessed many times.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	
 
 	// The first number is 0 because the only attribute we have in our array is positional data, then the next one is 3 because we have 3 bits of data for our first attribute
 	// x, y, z. However if we had another set of attributes such as texture coordinate that had an x,y value, we would add another line of code for glVertexAttribPointer
 	// then set the first value to 1, then the second parameter to 2 as it only contains two values for texture coordinates.
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	
+	glEnableVertexAttribArray(0);//This Zero represents the Location = 0 in the shader
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
 
 
 
@@ -171,7 +193,9 @@ int main()
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-
+	
+	
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
 	//Double buffer
@@ -193,8 +217,9 @@ int main()
 		// draw our first triangle
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		// glBindVertexArray(0); // no need to unbind it every time 
+		//glDrawArrays(GL_TRIANGLES, 0, (sizeof(vertices) / 3));
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glBindVertexArray(0); // no need to unbind it every time 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(window);
